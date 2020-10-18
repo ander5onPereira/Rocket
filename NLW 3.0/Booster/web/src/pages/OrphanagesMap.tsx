@@ -1,45 +1,45 @@
-import React,{useEffect,useState} from 'react';
+import React, { useEffect, useState } from "react";
 
-import mapMarkerImg from '../images/map-marker.svg';
+import mapMarkerImg from "../images/map-marker.svg";
 
-import {FiPlus, FiArrowRight} from "react-icons/fi";
+import { FiPlus, FiArrowRight } from "react-icons/fi";
 
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import {Map, TileLayer, Marker, Popup} from "react-leaflet";
+import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
-import Leaflet from 'leaflet';
+import Leaflet from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
 import "../styles/pages/orphanages-map.css";
 import api from "../services/api";
 
-const mapIcon=Leaflet.icon({
+const mapIcon = Leaflet.icon({
   iconUrl: mapMarkerImg,
-  iconSize:[42, 52],
-  iconAnchor:[21,52],
-  popupAnchor: [170,2]
+  iconSize: [42, 52],
+  iconAnchor: [21, 52],
+  popupAnchor: [170, 2],
 });
-interface Orphanage{
-  id:number;
-  latitude:number;
-  longitude:number;
-  name:string;
+interface Orphanage {
+  id: number;
+  latitude: number;
+  longitude: number;
+  name: string;
 }
 
-function OrphanagesMap(){
-  const [orphanages,setOrphanages] = useState<Orphanage[]>([]);
-  useEffect(()=>{
-    api.get("orphanages").then(response=>{
+function OrphanagesMap() {
+  const [orphanages, setOrphanages] = useState<Orphanage[]>([]);
+  useEffect(() => {
+    api.get("orphanages").then((response) => {
       setOrphanages(response.data);
     });
-  },[]);
-  return(
+  }, []);
+  return (
     <div id="page-map">
       <aside>
         <header>
-          <img src={mapMarkerImg} alt="Happy"/>
+          <img src={mapMarkerImg} alt="Happy" />
 
           <h2>Escolha um orfanato no mapa</h2>
           <p>Muitas crianças estão esperando a sua visita :)</p>
@@ -49,33 +49,40 @@ function OrphanagesMap(){
           <span>Paraná</span>
         </footer>
       </aside>
-      <Map 
-        center={[-26.2098259,-52.6921009]}
+      <Map
+        center={[-26.2098259, -52.6921009]}
         zoom={15}
-        style={{width:"100%",height:"100%"}}
+        style={{ width: "100%", height: "100%" }}
       >
-        {/* <TileLayer url="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"/> */}
-        {/* styles mapa do mapbox: streets-v11 | outdoors-v11 | light-v10 | dark-v10 | satellite-v9 | satellite-streets-v11 | navigation-preview-day-v4 | navigation-preview-night-v4 | navigation-guidance-day-v4 | navigation-guidance-night-v4*/}
-        <TileLayer url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`}/>
-        {orphanages.map(orphanage=>{
-            return(
-            <Marker icon={mapIcon} position={[orphanage.latitude,orphanage.longitude]} key={orphanage.id}>
-              <Popup closeButton={false} minWidth={240} maxHeight={240} className="map-popup">
-              {orphanage.name}
+        <TileLayer
+          url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`}
+        />
+        {orphanages.map((orphanage) => {
+          return (
+            <Marker
+              icon={mapIcon}
+              position={[orphanage.latitude, orphanage.longitude]}
+              key={orphanage.id}
+            >
+              <Popup
+                closeButton={false}
+                minWidth={240}
+                maxHeight={240}
+                className="map-popup"
+              >
+                {orphanage.name}
                 <Link to={`/orphanages/${orphanage.id}`}>
-                  <FiArrowRight size={20} color="#fff"/>
+                  <FiArrowRight size={20} color="#fff" />
                 </Link>
               </Popup>
             </Marker>
-            )
-          })
-        }
+          );
+        })}
       </Map>
       <Link to="/orphanages/create" className="create-orphanage">
         <FiPlus size={32} color="#fff" />
       </Link>
     </div>
-
-  )
+  );
 }
 export default OrphanagesMap;
